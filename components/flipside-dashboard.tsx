@@ -1,130 +1,51 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import {
-  ArrowUpRight,
-  Bell,
-  ChevronDown,
-  CircleHelp,
-  Clock3,
-  Command,
-  Filter,
-  LayoutGrid,
-  ListFilter,
-  Menu,
-  MessageSquareText,
-  MoreHorizontal,
-  Plus,
-  Search,
-  Settings2,
-  Sparkles,
-  SunMedium,
-  TrendingUp,
-  Users,
-  X,
-  Zap,
-} from 'lucide-react'
+import { Bell, ChevronDown, Clock3, Filter, Gavel, Heart, MapPin, Plus, Search, ShieldCheck, Sparkles, TrendingUp } from 'lucide-react'
 
-const wants = [
-  { id: '01', title: 'Industrial pendant lights', buyer: 'Noah Williams', category: 'Home & living', budget: '$420–$680', offers: 8, freshness: '12 min ago', status: 'Hot', color: 'from-amber-400/25 to-orange-500/5', initials: 'NW' },
-  { id: '02', title: 'Vintage film camera', buyer: 'Maya Chen', category: 'Electronics', budget: '$180–$260', offers: 5, freshness: '34 min ago', status: 'Open', color: 'from-cyan-400/20 to-blue-500/5', initials: 'MC' },
-  { id: '03', title: 'Oak writing desk', buyer: 'Theo Brooks', category: 'Furniture', budget: '$600–$950', offers: 11, freshness: '1 hr ago', status: 'Hot', color: 'from-emerald-400/20 to-teal-500/5', initials: 'TB' },
-  { id: '04', title: 'Set of ceramic planters', buyer: 'Aria Patel', category: 'Home & living', budget: '$90–$140', offers: 3, freshness: '2 hrs ago', status: 'Open', color: 'from-rose-400/20 to-pink-500/5', initials: 'AP' },
+const requests = [
+  { id: 1, title: 'iPhone 15 Pro 256GB', category: 'Electronics', location: 'Nairobi, KE', budget: 'KES 92,000', offers: 8, time: '2h 14m', initials: 'JM', color: '#e8dfd2' },
+  { id: 2, title: 'Sony WH-1000XM5 headphones', category: 'Electronics', location: 'Mombasa, KE', budget: 'KES 28,500', offers: 5, time: '5h 42m', initials: 'AK', color: '#d9e4e1' },
+  { id: 3, title: '2BR apartment near Westlands', category: 'Home & Living', location: 'Nairobi, KE', budget: 'KES 65,000 / mo', offers: 12, time: '1d 3h', initials: 'NW', color: '#e2dfe8' },
+  { id: 4, title: 'MacBook Air M2', category: 'Electronics', location: 'Kisumu, KE', budget: 'KES 105,000', offers: 3, time: '8h 09m', initials: 'SO', color: '#ead8d3' },
+  { id: 5, title: 'Genuine leather work bag', category: 'Fashion', location: 'Nakuru, KE', budget: 'KES 8,000', offers: 7, time: '14h 22m', initials: 'RM', color: '#dedbd0' },
+  { id: 6, title: 'Toyota Fielder 2015–2018', category: 'Vehicles', location: 'Nairobi, KE', budget: 'KES 1.4M', offers: 18, time: '2d 7h', initials: 'BK', color: '#d8e0e8' },
 ]
 
-const activity = [
-  { icon: Sparkles, tone: 'text-amber-300 bg-amber-300/10', text: 'Your offer on Oak writing desk was viewed', time: '8m' },
-  { icon: MessageSquareText, tone: 'text-cyan-300 bg-cyan-300/10', text: 'Maya sent a message about the camera', time: '24m' },
-  { icon: TrendingUp, tone: 'text-emerald-300 bg-emerald-300/10', text: 'You are trending in Electronics', time: '1h' },
-]
+const categories = ['All requests', 'Electronics', 'Home & Living', 'Fashion', 'Vehicles', 'Services']
 
 export default function FlipsideDashboard() {
-  const [activeTab, setActiveTab] = useState('Discover')
+  const [activeCategory, setActiveCategory] = useState('All requests')
   const [query, setQuery] = useState('')
-  const [mobileOpen, setMobileOpen] = useState(false)
-  const [saved, setSaved] = useState<string[]>([])
+  const [liked, setLiked] = useState<number[]>([])
+  const [showFilters, setShowFilters] = useState(false)
   const [showComposer, setShowComposer] = useState(false)
 
-  const filteredWants = useMemo(() => wants.filter((want) => want.title.toLowerCase().includes(query.toLowerCase()) || want.category.toLowerCase().includes(query.toLowerCase())), [query])
+  const filtered = useMemo(() => requests.filter((request) => {
+    const categoryMatch = activeCategory === 'All requests' || request.category === activeCategory
+    const queryMatch = `${request.title} ${request.location}`.toLowerCase().includes(query.toLowerCase())
+    return categoryMatch && queryMatch
+  }), [activeCategory, query])
 
   return (
-    <main className="min-h-screen bg-[#080b0f] text-slate-100 selection:bg-cyan-300/30">
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="aurora aurora-one" />
-        <div className="aurora aurora-two" />
-        <div className="grain" />
-      </div>
+    <main className="min-h-screen bg-[#f8f7f4] text-[#211f1b]">
+      <header className="sticky top-0 z-40 border-b border-[#e7e3dc] bg-[#f8f7f4]/95 backdrop-blur-xl">
+        <div className="mx-auto flex h-[72px] max-w-[1240px] items-center justify-between px-5 lg:px-8">
+          <a href="#top" className="flex items-center gap-2.5 text-[21px] font-semibold tracking-[-0.05em]"><span className="grid size-8 place-items-center rounded-[10px] bg-[#ee642b] text-white"><Gavel size={17} strokeWidth={2.5} /></span>flipside<span className="text-[#ee642b]">.</span></a>
+          <nav className="hidden items-center gap-8 text-[13px] font-medium text-[#746f67] md:flex"><a className="text-[#211f1b]" href="#requests">Browse requests</a><a href="#how-it-works">How it works</a><a href="#safety">Trust & safety</a></nav>
+          <div className="flex items-center gap-2.5"><button aria-label="Notifications" className="grid size-9 place-items-center rounded-full text-[#746f67] hover:bg-white"><Bell size={17} /></button><button className="hidden rounded-full border border-[#dcd6cc] px-4 py-2 text-[13px] font-semibold md:block">Sign in</button><button onClick={() => setShowComposer(true)} className="rounded-full bg-[#211f1b] px-4 py-2.5 text-[13px] font-semibold text-white shadow-sm hover:bg-[#ee642b]">Create account</button></div>
+        </div>
+      </header>
 
-      <div className="relative mx-auto flex min-h-screen max-w-[1560px]">
-        <aside className={`fixed inset-y-0 left-0 z-30 flex w-[248px] flex-col border-r border-white/[0.07] bg-[#0b0f14]/95 px-5 py-6 backdrop-blur-2xl transition-transform duration-300 lg:relative lg:translate-x-0 ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-          <div className="mb-10 flex items-center justify-between px-2">
-            <div className="flex items-center gap-2.5">
-              <span className="brand-mark"><span /></span>
-              <span className="text-[19px] font-semibold tracking-[-0.04em]">Flipside</span>
-            </div>
-            <button aria-label="Close navigation" onClick={() => setMobileOpen(false)} className="rounded-lg p-1.5 text-slate-500 hover:bg-white/5 hover:text-white lg:hidden"><X /></button>
-          </div>
+      <section id="top" className="mx-auto max-w-[1240px] px-5 pb-12 pt-14 lg:px-8 lg:pb-16 lg:pt-20"><div className="grid items-end gap-10 lg:grid-cols-[1fr_410px]"><div><div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#ead8cc] bg-[#fffaf6] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#ee642b]"><Sparkles size={13} /> Better deals, together</div><h1 className="max-w-[760px] text-[clamp(3.5rem,8vw,7.2rem)] font-medium leading-[0.91] tracking-[-0.075em]">Name your price.<br /><span className="text-[#ee642b]">Make it happen.</span></h1><p className="mt-7 max-w-[510px] text-[17px] leading-7 text-[#746f67]">Flipside is the marketplace where buyers post what they need and sellers compete to give them the best deal.</p></div><div className="rounded-[22px] border border-[#e7e3dc] bg-white p-5 shadow-[0_18px_60px_rgba(38,30,20,0.06)]"><div className="mb-4 flex items-center justify-between"><div><p className="text-[13px] font-semibold">Have something in mind?</p><p className="mt-1 text-[12px] text-[#9b958b]">Post a request in under a minute.</p></div><span className="grid size-9 place-items-center rounded-full bg-[#fff1e9] text-[#ee642b]"><Plus size={18} /></span></div><button onClick={() => setShowComposer(true)} className="flex w-full items-center justify-center gap-2 rounded-[13px] bg-[#ee642b] py-3.5 text-[13px] font-semibold text-white hover:bg-[#d9531e]"><Plus size={16} /> Post a request</button><div className="mt-4 flex items-center justify-center gap-2 text-[11px] text-[#9b958b]"><ShieldCheck size={14} className="text-[#4e8a69]" /> Payments held safely until delivery</div></div></div></section>
 
-          <div className="mb-7 px-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-600">Workspace</div>
-          <nav className="flex flex-col gap-1">
-            {['Discover', 'My wants', 'My offers', 'Messages'].map((item, index) => (
-              <button key={item} onClick={() => setActiveTab(item)} className={`nav-item ${activeTab === item ? 'nav-item-active' : ''}`}>
-                {index === 0 ? <LayoutGrid /> : index === 1 ? <Zap /> : index === 2 ? <ArrowUpRight /> : <MessageSquareText />}
-                <span>{item}</span>
-                {item === 'Messages' && <span className="ml-auto rounded-full bg-cyan-300 px-1.5 py-0.5 text-[10px] font-bold text-[#061014]">3</span>}
-              </button>
-            ))}
-          </nav>
+      <section id="requests" className="border-t border-[#e7e3dc] bg-white"><div className="mx-auto max-w-[1240px] px-5 py-10 lg:px-8 lg:py-14"><div className="mb-8 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between"><div><p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#ee642b]">Live marketplace</p><h2 className="text-3xl font-medium tracking-[-0.05em]">Open requests</h2></div><p className="max-w-[300px] text-sm leading-6 text-[#8a847b] lg:text-right">Find a request you can fulfill, then send your best offer.</p></div><div className="mb-8 flex flex-col gap-3 lg:flex-row"><div className="relative flex-1"><Search size={17} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#aaa39a]" /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search for anything..." className="h-12 w-full rounded-[13px] border border-[#e4dfd7] bg-[#faf9f7] pl-11 pr-4 text-sm outline-none transition focus:border-[#ee642b]" /></div><button onClick={() => setShowFilters(!showFilters)} className={`flex h-12 items-center justify-center gap-2 rounded-[13px] border px-5 text-sm font-semibold ${showFilters ? 'border-[#ee642b] bg-[#fff5ef] text-[#ee642b]' : 'border-[#e4dfd7] text-[#746f67]'}`}><Filter size={16} /> Filters <ChevronDown size={15} /></button></div>{showFilters && <div className="mb-6 rounded-[13px] border border-[#ead8cc] bg-[#fffaf6] p-4 text-sm text-[#746f67]">Showing active requests from verified buyers. More filters are coming soon.</div>}<div className="mb-9 flex gap-2 overflow-x-auto pb-1">{categories.map((category) => <button key={category} onClick={() => setActiveCategory(category)} className={`whitespace-nowrap rounded-full px-4 py-2 text-[12px] font-semibold transition ${activeCategory === category ? 'bg-[#211f1b] text-white' : 'bg-[#f5f3ef] text-[#746f67] hover:bg-[#ebe7e0]'}`}>{category}</button>)}</div><div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{filtered.map((request) => <article key={request.id} className="group rounded-[18px] border border-[#e7e3dc] bg-[#fdfcfb] p-5 transition hover:-translate-y-1 hover:border-[#ee642b]/50 hover:shadow-[0_16px_35px_rgba(38,30,20,0.08)]"><div className="mb-6 flex items-start justify-between"><div className="flex items-center gap-2.5"><span style={{ backgroundColor: request.color }} className="grid size-9 place-items-center rounded-full text-[11px] font-bold text-[#5e574e]">{request.initials}</span><div><p className="text-[11px] font-semibold text-[#746f67]">{request.category}</p><p className="mt-0.5 flex items-center gap-1 text-[10px] text-[#aaa39a]"><MapPin size={11} /> {request.location}</p></div></div><button aria-label={`Save ${request.title}`} onClick={() => setLiked((current) => current.includes(request.id) ? current.filter((id) => id !== request.id) : [...current, request.id])} className="text-[#bcb6ae] transition hover:text-[#ee642b]"><Heart size={18} fill={liked.includes(request.id) ? 'currentColor' : 'none'} /></button></div><h3 className="min-h-[54px] text-[18px] font-medium leading-6 tracking-[-0.035em]">{request.title}</h3><div className="mt-5 flex items-end justify-between border-t border-[#eeeae4] pt-4"><div><p className="text-[10px] uppercase tracking-[0.12em] text-[#aaa39a]">Budget</p><p className="mt-1 text-[17px] font-semibold tracking-[-0.03em]">{request.budget}</p></div><div className="text-right"><p className="flex items-center justify-end gap-1 text-[11px] font-semibold text-[#ee642b]"><TrendingUp size={13} /> {request.offers} offers</p><p className="mt-1 flex items-center gap-1 text-[10px] text-[#aaa39a]"><Clock3 size={11} /> {request.time} left</p></div></div><button className="mt-5 flex w-full items-center justify-center gap-2 rounded-[11px] border border-[#e5dfd7] py-2.5 text-[12px] font-semibold text-[#746f67] transition group-hover:border-[#ee642b] group-hover:text-[#ee642b]">View request <TrendingUp size={14} /></button></article>)}</div>{filtered.length === 0 && <div className="rounded-[18px] border border-dashed border-[#dcd6cc] py-16 text-center text-sm text-[#8a847b]">No requests match your search.</div>}<div className="mt-12 flex items-center justify-center"><button className="rounded-full border border-[#dcd6cc] px-5 py-3 text-[13px] font-semibold text-[#746f67]">Load more requests</button></div></div></section>
 
-          <div className="mb-3 mt-10 px-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-600">Manage</div>
-          <nav className="flex flex-col gap-1">
-            <button className="nav-item"><Users /><span>People</span></button>
-            <button className="nav-item"><Settings2 /><span>Settings</span></button>
-          </nav>
+      <section id="how-it-works" className="mx-auto max-w-[1240px] px-5 py-16 lg:px-8 lg:py-24"><div className="grid gap-10 lg:grid-cols-[0.7fr_1.3fr] lg:items-start"><div><p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#ee642b]">Simple by design</p><h2 className="max-w-[320px] text-4xl font-medium leading-[1] tracking-[-0.06em]">The better way to buy.</h2></div><div className="grid gap-4 sm:grid-cols-3"><div className="border-t-2 border-[#ee642b] pt-4"><span className="text-xs font-semibold text-[#ee642b]">01</span><h3 className="mt-5 text-lg font-semibold">Say what you need</h3><p className="mt-2 text-sm leading-6 text-[#746f67]">Set your budget, add the details, and let the right sellers find you.</p></div><div className="border-t-2 border-[#d8d2c8] pt-4"><span className="text-xs font-semibold text-[#aaa39a]">02</span><h3 className="mt-5 text-lg font-semibold">Compare real offers</h3><p className="mt-2 text-sm leading-6 text-[#746f67]">Sellers compete on price, quality, and speed. You choose what works.</p></div><div id="safety" className="border-t-2 border-[#d8d2c8] pt-4"><span className="text-xs font-semibold text-[#aaa39a]">03</span><h3 className="mt-5 text-lg font-semibold">Deal with confidence</h3><p className="mt-2 text-sm leading-6 text-[#746f67]">Your payment is protected until the item arrives as promised.</p></div></div></div></section>
 
-          <div className="mt-auto rounded-2xl border border-cyan-300/15 bg-gradient-to-br from-cyan-300/[0.09] to-transparent p-4">
-            <div className="mb-3 flex size-8 items-center justify-center rounded-lg bg-cyan-300/15 text-cyan-200"><Sparkles /></div>
-            <p className="text-sm font-medium">Make the first move.</p>
-            <p className="mt-1 text-xs leading-5 text-slate-500">Post what you need and let the right offer find you.</p>
-            <button onClick={() => setShowComposer(true)} className="press mt-4 flex w-full items-center justify-center gap-2 rounded-lg bg-cyan-300 px-3 py-2 text-xs font-bold text-[#071014] hover:bg-cyan-200"><Plus /> Post a want</button>
-          </div>
-        </aside>
+      <footer className="border-t border-[#e7e3dc] bg-[#211f1b] text-white"><div className="mx-auto flex max-w-[1240px] flex-col gap-8 px-5 py-10 lg:flex-row lg:items-center lg:justify-between lg:px-8"><div><a href="#top" className="text-xl font-semibold tracking-[-0.05em]">flipside<span className="text-[#ee642b]">.</span></a><p className="mt-2 text-xs text-white/50">Good deals start with a conversation.</p></div><div className="flex gap-6 text-xs text-white/60"><a href="#requests">Browse requests</a><a href="#how-it-works">How it works</a><a href="#safety">Safety</a></div><p className="text-[11px] text-white/40">© 2026 Flipside marketplace</p></div></footer>
 
-        <section className="min-w-0 flex-1">
-          <header className="sticky top-0 z-20 flex h-[76px] items-center justify-between border-b border-white/[0.07] bg-[#080b0f]/80 px-5 backdrop-blur-xl sm:px-8 lg:px-10">
-            <button aria-label="Open navigation" onClick={() => setMobileOpen(true)} className="mr-3 rounded-lg p-2 text-slate-400 hover:bg-white/5 lg:hidden"><Menu /></button>
-            <div className="relative hidden max-w-[360px] flex-1 md:block"><Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-600" /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search wants, categories, people" className="h-10 w-full rounded-xl border border-white/[0.08] bg-white/[0.035] pl-10 pr-12 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-cyan-300/40 focus:bg-white/[0.06]" /><kbd className="absolute right-2 top-2 rounded-md border border-white/10 px-1.5 py-1 text-[10px] text-slate-600"><Command /></kbd></div>
-            <div className="ml-auto flex items-center gap-2 sm:gap-4">
-              <button aria-label="Toggle theme" className="rounded-lg p-2 text-slate-500 transition hover:bg-white/5 hover:text-slate-200"><SunMedium /></button>
-              <button aria-label="Notifications" className="relative rounded-lg p-2 text-slate-500 transition hover:bg-white/5 hover:text-slate-200"><Bell /><i className="absolute right-1.5 top-1.5 size-1.5 rounded-full bg-coral-300" /></button>
-              <span className="hidden h-6 w-px bg-white/10 sm:block" />
-              <button className="flex items-center gap-2 rounded-xl p-1.5 pr-2 transition hover:bg-white/5"><span className="avatar">JD</span><span className="hidden text-sm font-medium sm:block">Jordan Diaz</span><ChevronDown className="size-4 text-slate-600" /></button>
-            </div>
-          </header>
-
-          <div className="mx-auto max-w-[1220px] px-5 py-8 sm:px-8 lg:px-10 lg:py-11">
-            <div className="mb-9 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
-              <div className="stagger-in"><p className="mb-3 flex items-center gap-2 text-xs font-medium text-cyan-200"><span className="live-dot" /> Live marketplace</p><h1 className="text-3xl font-semibold tracking-[-0.05em] text-white sm:text-[42px]">Good morning, Jordan<span className="text-cyan-300">.</span></h1><p className="mt-2 text-sm text-slate-500">A smarter way to find what&apos;s next.</p></div>
-              <button onClick={() => setShowComposer(true)} className="press group flex items-center justify-center gap-2 rounded-xl bg-cyan-300 px-4 py-3 text-sm font-bold text-[#071014] shadow-[0_0_28px_rgba(103,232,249,0.12)] transition hover:bg-cyan-200"><Plus className="transition group-hover:rotate-90" /> Post a want</button>
-            </div>
-
-            <div className="mb-9 grid grid-cols-2 gap-3 lg:grid-cols-4">
-              {[['Active wants', '24', '+18%', 'text-cyan-200'], ['Offers received', '68', '+12%', 'text-emerald-300'], ['Avg. response', '2.4h', '-36%', 'text-amber-200'], ['Match rate', '82%', '+9%', 'text-violet-300']].map(([label, value, change, color]) => <div key={label} className="stat-card"><div className="flex items-center justify-between"><span className="text-xs text-slate-500">{label}</span><TrendingUp className={`size-3.5 ${color}`} /></div><div className="mt-3 flex items-end gap-2"><strong className="text-2xl font-semibold tracking-[-0.05em] text-white">{value}</strong><span className={`mb-1 text-[11px] font-semibold ${color}`}>{change}</span></div><div className="sparkline"><span /><span /><span /><span /><span /><span /><span /></div></div>)}
-            </div>
-
-            <div className="mb-5 flex items-center justify-between"><div><h2 className="text-lg font-semibold tracking-[-0.03em] text-white">Find your next win</h2><p className="mt-1 text-xs text-slate-500">Fresh wants from people ready to buy.</p></div><div className="flex gap-2"><button className="icon-button"><ListFilter /></button><button className="icon-button hidden sm:flex"><Filter /><span className="ml-1 text-xs">Filters</span></button></div></div>
-            <div className="mb-5 flex gap-2 overflow-x-auto pb-1">{['All wants', 'Near you', 'Ending soon', 'Best match'].map((filter, index) => <button key={filter} className={`chip ${index === 0 ? 'chip-active' : ''}`}>{filter}</button>)}</div>
-
-            <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_310px]">
-              <div className="grid gap-3 sm:grid-cols-2">{filteredWants.map((want) => <article key={want.id} className="want-card group"><div className={`relative h-[104px] overflow-hidden rounded-t-2xl bg-gradient-to-br ${want.color}`}><div className="absolute -right-4 -top-8 size-32 rounded-full border border-white/10 bg-white/[0.035] blur-[1px]" /><span className="absolute left-4 top-4 rounded-md border border-white/10 bg-black/20 px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-white/70">{want.status}</span><button onClick={() => setSaved((current) => current.includes(want.id) ? current.filter((id) => id !== want.id) : [...current, want.id])} aria-label="Save want" className={`absolute right-3 top-3 rounded-lg p-2 transition ${saved.includes(want.id) ? 'bg-cyan-300 text-[#071014]' : 'bg-black/15 text-white/60 hover:bg-black/30 hover:text-white'}`}><Zap className={saved.includes(want.id) ? 'fill-current' : ''} /></button><span className="absolute bottom-3 left-4 text-[11px] font-medium text-white/60">{want.category}</span></div><div className="p-4"><div className="flex items-start justify-between gap-3"><div><h3 className="font-semibold tracking-[-0.02em] text-white transition group-hover:text-cyan-200">{want.title}</h3><p className="mt-1 text-xs text-slate-500">{want.budget} · {want.offers} offers</p></div><span className="avatar avatar-small">{want.initials}</span></div><div className="mt-4 flex items-center justify-between border-t border-white/[0.06] pt-3"><span className="flex items-center gap-1.5 text-[11px] text-slate-600"><Clock3 className="size-3.5" /> {want.freshness}</span><button className="text-xs font-semibold text-cyan-200 opacity-0 transition group-hover:opacity-100">Make offer <ArrowUpRight className="ml-1 inline size-3" /></button></div></div></article>)}</div>
-
-              <aside className="space-y-4"><div className="panel"><div className="mb-5 flex items-center justify-between"><div><h3 className="font-semibold tracking-[-0.02em] text-white">Your pulse</h3><p className="mt-1 text-xs text-slate-500">Last 7 days</p></div><button className="text-slate-600 hover:text-white"><MoreHorizontal /></button></div><div className="flex items-end gap-3"><strong className="text-4xl font-semibold tracking-[-0.07em] text-white">$2,840</strong><span className="mb-2 text-xs font-semibold text-emerald-300">+24.8%</span></div><div className="activity-chart mt-5"><div className="chart-line" /><div className="chart-fill" />{[1,2,3,4,5,6,7].map((day) => <span key={day} />)}</div><div className="mt-3 flex justify-between text-[10px] text-slate-700"><span>Mon</span><span>Wed</span><span>Fri</span><span>Sun</span></div></div><div className="panel"><div className="mb-5 flex items-center justify-between"><h3 className="font-semibold tracking-[-0.02em] text-white">Recent activity</h3><button className="text-xs font-medium text-cyan-200 hover:text-cyan-100">View all</button></div><div className="flex flex-col gap-4">{activity.map(({ icon: Icon, tone, text, time }) => <div className="flex gap-3" key={text}><div className={`flex size-8 shrink-0 items-center justify-center rounded-lg ${tone}`}><Icon className="size-4" /></div><div className="min-w-0"><p className="text-xs leading-5 text-slate-300">{text}</p><span className="text-[10px] text-slate-600">{time} ago</span></div></div>)}</div></div></aside>
-            </div>
-          </div>
-        </section>
-      </div>
-
-      {showComposer && <div className="modal-backdrop" onClick={() => setShowComposer(false)}><div className="composer" onClick={(event) => event.stopPropagation()}><div className="flex items-start justify-between"><div><p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-200">New request</p><h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-white">What are you looking for?</h2><p className="mt-2 text-sm text-slate-500">The right seller might already have it.</p></div><button aria-label="Close" onClick={() => setShowComposer(false)} className="rounded-lg p-2 text-slate-500 hover:bg-white/5 hover:text-white"><X /></button></div><label className="mt-7 block text-xs font-medium text-slate-400">Item or service<input autoFocus placeholder="e.g. A walnut dining table" className="control mt-2" /></label><div className="mt-4 grid gap-4 sm:grid-cols-2"><label className="text-xs font-medium text-slate-400">Budget<input placeholder="$ 0.00" className="control mt-2" /></label><label className="text-xs font-medium text-slate-400">Category<select className="control mt-2"><option>Home & living</option><option>Electronics</option><option>Furniture</option></select></label></div><button onClick={() => setShowComposer(false)} className="press mt-7 flex w-full items-center justify-center gap-2 rounded-xl bg-cyan-300 py-3 text-sm font-bold text-[#071014] hover:bg-cyan-200">Publish want <ArrowUpRight /></button></div></div>}
+      {showComposer && <div className="fixed inset-0 z-50 grid place-items-center bg-[#211f1b]/35 p-5" onClick={() => setShowComposer(false)}><div className="w-full max-w-md rounded-[22px] bg-white p-6 shadow-2xl" onClick={(event) => event.stopPropagation()}><div className="flex items-start justify-between"><div><p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#ee642b]">New request</p><h2 className="mt-2 text-2xl font-medium tracking-[-0.04em]">What do you need?</h2></div><button aria-label="Close request form" onClick={() => setShowComposer(false)} className="text-[#746f67]">×</button></div><label className="mt-7 block text-xs font-semibold text-[#746f67]">Item or service<input autoFocus placeholder="e.g. A walnut dining table" className="mt-2 h-12 w-full rounded-[12px] border border-[#e4dfd7] bg-[#faf9f7] px-4 text-sm outline-none focus:border-[#ee642b]" /></label><label className="mt-4 block text-xs font-semibold text-[#746f67]">Budget<input placeholder="KES 0" className="mt-2 h-12 w-full rounded-[12px] border border-[#e4dfd7] bg-[#faf9f7] px-4 text-sm outline-none focus:border-[#ee642b]" /></label><button onClick={() => setShowComposer(false)} className="mt-6 w-full rounded-[12px] bg-[#ee642b] py-3.5 text-sm font-semibold text-white hover:bg-[#d9531e]">Publish request</button></div></div>}
     </main>
   )
 }
