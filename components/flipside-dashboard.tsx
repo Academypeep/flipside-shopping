@@ -28,7 +28,7 @@ export default function FlipsideDashboard() {
   }), [activeCategory, query])
 
   return (
-    <main className="min-h-screen bg-[#f8f7f4] text-[#211f1b]">
+    <main className="motion-page min-h-screen bg-[#f8f7f4] text-[#211f1b]">
       <header className="sticky top-0 z-40 border-b border-[#e7e3dc] bg-[#f8f7f4]/95 backdrop-blur-xl">
         <div className="mx-auto flex h-[72px] max-w-[1240px] items-center justify-between px-5 lg:px-8">
           <a href="#top" className="flex items-center gap-2.5 text-[21px] font-semibold tracking-[-0.05em]"><span className="grid size-8 place-items-center rounded-[10px] bg-[#ee642b] text-white"><Gavel size={17} strokeWidth={2.5} /></span>flipside<span className="text-[#ee642b]">.</span></a>
