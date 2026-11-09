@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { Bell, ChevronDown, Clock3, Filter, Gavel, Heart, MapPin, Plus, Search, ShieldCheck, Sparkles, TrendingUp } from 'lucide-react'
+import { Bell, ChevronDown, Clock3, Filter, Gavel, Heart, MapPin, Moon, Plus, Search, ShieldCheck, Sparkles, Sun, TrendingUp } from 'lucide-react'
 
 const requests = [
   { id: 1, title: 'iPhone 15 Pro 256GB', category: 'Electronics', location: 'Nairobi, KE', budget: 'KES 92,000', offers: 8, time: '2h 14m', initials: 'JM', color: '#e8dfd2' },
@@ -15,6 +15,7 @@ const requests = [
 const categories = ['All requests', 'Electronics', 'Home & Living', 'Fashion', 'Vehicles', 'Services']
 
 export default function FlipsideDashboard() {
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark')
   const [activeCategory, setActiveCategory] = useState('All requests')
   const [query, setQuery] = useState('')
   const [liked, setLiked] = useState<number[]>([])
@@ -73,12 +74,12 @@ export default function FlipsideDashboard() {
   }), [activeCategory, query])
 
   return (
-    <main className="motion-page min-h-screen bg-[#0d0d0d] text-[#f5f5f5]">
+    <main data-theme={theme} className="motion-page min-h-screen bg-[#0d0d0d] text-[#f5f5f5]">
       <header className="sticky top-0 z-40 border-b border-white/10 bg-[#0d0d0d]/95 backdrop-blur-xl">
         <div className="mx-auto flex h-[72px] max-w-[1240px] items-center justify-between px-5 lg:px-8">
           <a href="#top" className="flex items-center gap-2.5 text-[21px] font-semibold tracking-[-0.05em]"><span className="grid size-8 place-items-center rounded-[10px] bg-[#ee642b] text-white"><Gavel size={17} strokeWidth={2.5} /></span>flipside<span className="text-[#ee642b]">.</span></a>
           <nav className="hidden items-center gap-8 text-[13px] font-medium text-white/45 md:flex"><a className="text-white" href="#requests">Browse requests</a><a href="#how-it-works">How it works</a><a href="#safety">Trust & safety</a></nav>
-          <div className="flex items-center gap-2.5"><button aria-label="Notifications" className="grid size-9 place-items-center rounded-full text-[#746f67] hover:bg-white"><Bell size={17} /></button><button type="button" onClick={openSignIn} className="rounded-full border border-[#dcd6cc] px-3.5 py-2 text-[13px] font-semibold">Sign in</button><button onClick={openComposer} className="rounded-full bg-[#211f1b] px-4 py-2.5 text-[13px] font-semibold text-white shadow-sm hover:bg-[#ee642b]">Create account</button></div>
+          <div className="flex items-center gap-1.5 sm:gap-2.5"><button type="button" aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`} onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className="grid size-10 shrink-0 place-items-center rounded-full border border-white/10 text-white/60 hover:bg-white/10">{theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}</button><button type="button" aria-label="Notifications" className="grid size-10 shrink-0 place-items-center rounded-full border border-white/10 text-white/60 hover:bg-white/10"><Bell size={16} /></button><button type="button" onClick={openSignIn} className="min-h-10 shrink-0 rounded-full border border-white/20 px-3 py-2 text-[12px] font-semibold sm:px-3.5 sm:text-[13px]">Sign in</button><button type="button" onClick={openComposer} className="min-h-10 shrink-0 rounded-full bg-[#ee642b] px-3 py-2.5 text-[12px] font-semibold text-white shadow-sm hover:bg-[#d9531e] sm:px-4 sm:text-[13px]"><span className="hidden sm:inline">Create account</span><span className="sm:hidden">Post</span></button></div>
         </div>
       </header>
 

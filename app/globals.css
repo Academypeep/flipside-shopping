@@ -54,4 +54,18 @@ button { cursor: pointer; }
 .motion-page article:nth-child(6) { animation-delay: .29s; }
 .motion-page article:hover { box-shadow: 0 22px 45px rgb(38 30 20 / 10%); }
 .motion-page .bg-\[\#ee642b\] { background-image: linear-gradient(110deg, #ee642b 35%, #ffb08b 50%, #ee642b 65%); background-size: 220% 100%; animation: mono-shimmer 4s ease-in-out infinite; }
-@media (prefers-reduced-motion:reduce) { *,*:before,*:after { animation-duration:.01ms!important; transition-duration:.01ms!important; } }
+[data-theme="dark"] input { border-color:#ffffff14 !important; background:#171717 !important; color:#f5f5f5 !important; }
+[data-theme="dark"] input::placeholder { color:#777 !important; }
+[data-theme="dark"] [class*="bg-[#faf9f7]"], [data-theme="dark"] [class*="bg-[#fffaf6]"], [data-theme="dark"] [class*="bg-[#f5f3ef]"] { background:#171717 !important; color:#e5e5e5 !important; border-color:#ffffff14 !important; }
+[data-theme="dark"] [class*="border-[#e4dfd7]"], [data-theme="dark"] [class*="border-[#ead8cc]"], [data-theme="dark"] [class*="border-[#dcd6cc]"] { border-color:#ffffff18 !important; }
+[data-theme="dark"] [class*="text-[#746f67]"], [data-theme="dark"] [class*="text-[#8a847b]"], [data-theme="dark"] [class*="text-[#aaa39a]"] { color:#9ca3af !important; }
+[data-theme="light"] { background:#f8f7f4 !important; color:#211f1b !important; }
+[data-theme="light"] > header { background:rgba(248,247,244,.94) !important; border-color:#e7e3dc !important; }
+[data-theme="light"] > section { background:#f8f7f4 !important; color:#211f1b !important; border-color:#e7e3dc !important; }
+[data-theme="light"] #requests { background:#f1efeb !important; }
+[data-theme="light"] input { background:#fff !important; color:#211f1b !important; border-color:#e4dfd7 !important; }
+[data-theme="light"] button[class*="border-white"] { color:#211f1b !important; border-color:#dcd6cc !important; }
+[data-theme="light"] button[class*="bg-[#ee642b]"] { color:#fff !important; }
+[data-theme="light"] > section:first-of-type > div > div:first-child > p:last-child { color:#746f67 !important; }
+@media (max-width:640px) { .motion-page > header > div { padding-left:16px; padding-right:16px; } .motion-page > header nav { display:none; } .motion-page button { min-height:40px; } .motion-page input { font-size:16px; } }
+@media (prefers-reduced-motion:reduce) { *,*:before, *:after { animation-duration:.01ms!important; transition-duration:.01ms!important; } }
