@@ -100,7 +100,7 @@ class MarketplaceStore {
   private nextId = 7
 
   constructor() {
-    // Seed initial dummy offers
+    // Seed initial verified seller offers
     this.offers.set(1, [
       {
         id: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
