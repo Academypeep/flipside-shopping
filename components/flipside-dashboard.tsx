@@ -22,9 +22,6 @@ export default function FlipsideDashboard() {
   const [showFilters, setShowFilters] = useState(false)
   const [showComposer, setShowComposer] = useState(false)
   const [showSignIn, setShowSignIn] = useState(false)
-  const [signInEmail, setSignInEmail] = useState('')
-  const [signInPassword, setSignInPassword] = useState('')
-  const [signInError, setSignInError] = useState('')
   const [requestTitle, setRequestTitle] = useState('')
   const [requestBudget, setRequestBudget] = useState('')
   const [formError, setFormError] = useState('')
@@ -39,23 +36,8 @@ export default function FlipsideDashboard() {
     setShowComposer(false)
   }
 
-  const openSignIn = () => {
-    setSignInError('')
-    setShowSignIn(true)
-  }
-
-  const closeSignIn = () => {
-    setSignInError('')
-    setShowSignIn(false)
-  }
-
-  const submitSignIn = () => {
-    if (!signInEmail.trim() || !signInPassword.trim()) {
-      setSignInError('Enter your email and password to continue.')
-      return
-    }
-    closeSignIn()
-  }
+  const openSignIn = () => setShowSignIn(true)
+  const closeSignIn = () => setShowSignIn(false)
 
   const publishRequest = () => {
     if (!requestTitle.trim() || !requestBudget.trim()) {
@@ -89,9 +71,9 @@ export default function FlipsideDashboard() {
 
       <section id="how-it-works" className="mx-auto max-w-[1240px] px-5 py-16 lg:px-8 lg:py-24"><div className="grid gap-10 lg:grid-cols-[0.7fr_1.3fr] lg:items-start"><div><p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#ee642b]">Simple by design</p><h2 className="max-w-[320px] text-4xl font-medium leading-[1] tracking-[-0.06em]">The better way to buy.</h2></div><div className="grid gap-4 sm:grid-cols-3"><div className="border-t-2 border-[#ee642b] pt-4"><span className="text-xs font-semibold text-[#ee642b]">01</span><h3 className="mt-5 text-lg font-semibold">Say what you need</h3><p className="mt-2 text-sm leading-6 text-[#746f67]">Set your budget, add the details, and let the right sellers find you.</p></div><div className="border-t-2 border-[#d8d2c8] pt-4"><span className="text-xs font-semibold text-[#aaa39a]">02</span><h3 className="mt-5 text-lg font-semibold">Compare real offers</h3><p className="mt-2 text-sm leading-6 text-[#746f67]">Sellers compete on price, quality, and speed. You choose what works.</p></div><div id="safety" className="border-t-2 border-[#d8d2c8] pt-4"><span className="text-xs font-semibold text-[#aaa39a]">03</span><h3 className="mt-5 text-lg font-semibold">Deal with confidence</h3><p className="mt-2 text-sm leading-6 text-[#746f67]">Your payment is protected until the item arrives as promised.</p></div></div></div></section>
 
-      <footer className="border-t border-white/10 bg-[#0d0d0d] text-white"><div className="mx-auto flex max-w-[1240px] flex-col gap-8 px-5 py-10 lg:flex-row lg:items-center lg:justify-between lg:px-8"><div><a href="#top" className="text-xl font-semibold tracking-[-0.05em]">flipside<span className="text-[#ee642b]">.</span></a><p className="mt-2 text-xs text-white/50">Good deals start with a conversation.</p></div><div className="flex gap-6 text-xs text-white/60"><a href="#requests">Browse requests</a><a href="#how-it-works">How it works</a><a href="#safety">Safety</a></div><p className="text-[11px] text-white/40">© 2026 Flipside marketplace</p></div></footer>
+      <footer className="border-t border-white/10 bg-[#0d0d0d] text-white"><div className="mx-auto flex max-w-[1240px] flex-col gap-8 px-5 py-10 lg:flex-row lg:items-center lg:justify-between lg:px-8"><div><a href="#top" className="text-xl font-semibold tracking-[-0.05em]">flipside<span className="text-[#ee642b]">.</span></a><p className="mt-2 text-xs text-white/50">Good deals start with a conversation.</p></div><div className="flex flex-wrap gap-x-6 gap-y-3 text-xs text-white/60"><a href="#requests">Browse requests</a><a href="#how-it-works">How it works</a><a href="#safety">Safety</a><a href="/support">Support</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a></div><p className="text-[11px] text-white/40">© 2026 Flipside marketplace</p></div></footer>
 
-      {showSignIn && <div className="fixed inset-0 z-50 grid place-items-center bg-[#211f1b]/60 p-5" role="presentation" onClick={closeSignIn} onKeyDown={(event) => event.key === 'Escape' && closeSignIn()}><div className="w-full max-w-md rounded-[22px] bg-white p-6 text-[#211f1b] shadow-2xl" role="dialog" aria-modal="true" aria-labelledby="sign-in-title" onClick={(event) => event.stopPropagation()}><div className="flex items-start justify-between"><div><p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#ee642b]">Welcome back</p><h2 id="sign-in-title" className="mt-2 text-2xl font-medium tracking-[-0.04em]">Sign in to Flipside</h2></div><button type="button" aria-label="Close sign-in form" onClick={closeSignIn} className="text-[#746f67]">×</button></div><form onSubmit={(event) => { event.preventDefault(); submitSignIn() }} className="mt-7"><label htmlFor="sign-in-email" className="block text-xs font-semibold text-[#746f67]">Email<input id="sign-in-email" type="email" autoComplete="email" value={signInEmail} onChange={(event) => setSignInEmail(event.target.value)} className="mt-2 h-12 w-full rounded-[12px] border border-[#e4dfd7] bg-[#faf9f7] px-4 text-sm outline-none focus:border-[#ee642b]" /></label><label htmlFor="sign-in-password" className="mt-4 block text-xs font-semibold text-[#746f67]">Password<input id="sign-in-password" type="password" autoComplete="current-password" value={signInPassword} onChange={(event) => setSignInPassword(event.target.value)} className="mt-2 h-12 w-full rounded-[12px] border border-[#e4dfd7] bg-[#faf9f7] px-4 text-sm outline-none focus:border-[#ee642b]" /></label>{signInError && <p role="alert" className="mt-3 text-xs font-medium text-[#c2410c]">{signInError}</p>}<button type="submit" className="mt-6 w-full rounded-[12px] bg-[#ee642b] py-3.5 text-sm font-semibold text-white hover:bg-[#d9531e]">Sign in</button></form></div></div>}
+      {showSignIn && <div className="fixed inset-0 z-50 grid place-items-center bg-[#211f1b]/60 p-5" role="presentation" onClick={closeSignIn} onKeyDown={(event) => event.key === 'Escape' && closeSignIn()}><div className="w-full max-w-md rounded-[22px] bg-white p-6 text-[#211f1b] shadow-2xl" role="dialog" aria-modal="true" aria-labelledby="sign-in-title" onClick={(event) => event.stopPropagation()}><div className="flex items-start justify-between"><div><p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#ee642b]">Welcome back</p><h2 id="sign-in-title" className="mt-2 text-2xl font-medium tracking-[-0.04em]">Account access is not connected</h2></div><button type="button" aria-label="Close sign-in form" onClick={closeSignIn} className="text-[#746f67]">×</button></div><div className="mt-7 rounded-[14px] bg-[#faf9f7] p-4 text-sm leading-6 text-[#746f67]">Account creation and sign-in are not connected in this preview. Connect the authentication provider before collecting credentials or publishing account-owned data.</div><a href="/support" className="mt-5 inline-flex w-full items-center justify-center rounded-[12px] bg-[#ee642b] py-3.5 text-sm font-semibold text-white hover:bg-[#d9531e]">Contact support</a></div></div>}
 
       {showComposer && <div className="fixed inset-0 z-50 grid place-items-center bg-[#211f1b]/35 p-5" role="presentation" onClick={closeComposer} onKeyDown={(event) => event.key === 'Escape' && closeComposer()}><div className="w-full max-w-md rounded-[22px] bg-white p-6 shadow-2xl" role="dialog" aria-modal="true" aria-labelledby="request-dialog-title" onClick={(event) => event.stopPropagation()}><div className="flex items-start justify-between"><div><p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#ee642b]">New request</p><h2 id="request-dialog-title" className="mt-2 text-2xl font-medium tracking-[-0.04em]">What do you need?</h2></div><button type="button" aria-label="Close request form" onClick={closeComposer} className="text-[#746f67]">×</button></div><label htmlFor="request-title" className="mt-7 block text-xs font-semibold text-[#746f67]">Item or service<input id="request-title" value={requestTitle} onChange={(event) => setRequestTitle(event.target.value)} autoFocus placeholder="e.g. A walnut dining table" className="mt-2 h-12 w-full rounded-[12px] border border-[#e4dfd7] bg-[#faf9f7] px-4 text-sm outline-none focus:border-[#ee642b]" /></label><label htmlFor="request-budget" className="mt-4 block text-xs font-semibold text-[#746f67]">Budget<input id="request-budget" value={requestBudget} onChange={(event) => setRequestBudget(event.target.value)} placeholder="KES 0" className="mt-2 h-12 w-full rounded-[12px] border border-[#e4dfd7] bg-[#faf9f7] px-4 text-sm outline-none focus:border-[#ee642b]" /></label>{formError && <p role="alert" className="mt-3 text-xs font-medium text-[#c2410c]">{formError}</p>}<button type="button" onClick={publishRequest} className="mt-6 w-full rounded-[12px] bg-[#ee642b] py-3.5 text-sm font-semibold text-white hover:bg-[#d9531e]">Publish request</button></div></div>}
     </main>
