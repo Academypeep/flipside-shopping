@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { MarketRequest } from '@/lib/db/types'
+import { fetchWithRetry } from '@/lib/fetch-with-retry'
+import { telemetry } from '@/lib/telemetry'
 
 interface MarketplaceState {
   items: MarketRequest[]
@@ -29,12 +31,16 @@ export function useMarketplace(activeCategory: string, query: string) {
         params.set('query', query.trim())
       }
 
-      const res = await fetch(`/api/v1/requests?${params.toString()}`)
+      const res = await fetchWithRetry(`/api/v1/requests?${params.toString()}`, {
+        timeoutMs: 8000,
+        maxRetries: 2,
+      })
       if (!res.ok) {
         throw new Error(`Failed to load requests (${res.status})`)
       }
       const data = await res.json()
       if (data.success) {
+        telemetry.track('marketplace_feed_loaded', { count: data.data.length, category: activeCategory })
         setState({
           items: data.data,
           total: data.meta?.total ?? data.data.length,
@@ -46,6 +52,7 @@ export function useMarketplace(activeCategory: string, query: string) {
       }
     } catch (err: unknown) {
       const error = err as Error
+      telemetry.reportCrash(error, { action: 'fetchRequests', activeCategory, query })
       setState((prev) => ({
         ...prev,
         loading: false,
@@ -64,27 +71,38 @@ export function useMarketplace(activeCategory: string, query: string) {
   }, [fetchRequests])
 
   const createRequest = async (payload: { title: string; category?: string; budget: string; location?: string }) => {
-    const res = await fetch('/api/v1/requests', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    })
+    const idempotencyKey = crypto.randomUUID()
+    try {
+      const res = await fetchWithRetry('/api/v1/requests', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-idempotency-key': idempotencyKey,
+        },
+        body: JSON.stringify(payload),
+        timeoutMs: 10000,
+        maxRetries: 2,
+      })
 
-    const json = await res.json()
-    if (!res.ok || !json.success) {
-      throw new Error(json.error?.message ?? 'Failed to create request')
+      const json = await res.json()
+      if (!res.ok || !json.success) {
+        throw new Error(json.error?.message ?? 'Failed to create request')
+      }
+
+      telemetry.track('marketplace_request_created', { id: json.data.id, category: payload.category })
+
+      // Prepend newly created item optimistically
+      setState((prev) => ({
+        ...prev,
+        items: [json.data, ...prev.items],
+        total: prev.total + 1,
+      }))
+
+      return json.data as MarketRequest
+    } catch (err) {
+      telemetry.reportCrash(err instanceof Error ? err : String(err), { action: 'createRequest' })
+      throw err
     }
-
-    // Prepend newly created item optimistically
-    setState((prev) => ({
-      ...prev,
-      items: [json.data, ...prev.items],
-      total: prev.total + 1,
-    }))
-
-    return json.data as MarketRequest
   }
 
   return {

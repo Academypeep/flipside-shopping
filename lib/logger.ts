@@ -14,12 +14,44 @@ interface LogPayload {
 }
 
 class StructuredLogger {
+  private redact(obj: Record<string, unknown>): Record<string, unknown> {
+    const sensitiveKeys = [
+      'password',
+      'token',
+      'secret',
+      'authorization',
+      'cookie',
+      'credit_card',
+      'cvv',
+      'phone',
+      'privatekey',
+    ]
+    const result: Record<string, unknown> = {}
+
+    for (const [key, value] of Object.entries(obj)) {
+      if (sensitiveKeys.some((s) => key.toLowerCase().includes(s))) {
+        result[key] = '[REDACTED]'
+      } else if (value && typeof value === 'object') {
+        if (Array.isArray(value)) {
+          result[key] = value.map((v) =>
+            v && typeof v === 'object' ? this.redact(v as Record<string, unknown>) : v,
+          )
+        } else {
+          result[key] = this.redact(value as Record<string, unknown>)
+        }
+      } else {
+        result[key] = value
+      }
+    }
+    return result
+  }
+
   private format(level: LogLevel, message: string, context?: Record<string, unknown>, error?: Error): string {
     const payload: LogPayload = {
       level,
       message,
       timestamp: new Date().toISOString(),
-      context,
+      context: context ? this.redact(context) : undefined,
     }
 
     if (error) {

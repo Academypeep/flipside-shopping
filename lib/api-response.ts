@@ -43,6 +43,9 @@ export function successResponse<T>(
       status: init?.status ?? 200,
       headers: {
         'Content-Type': 'application/json',
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        Pragma: 'no-cache',
+        Expires: '0',
         ...init?.headers,
       },
     },
@@ -73,6 +76,9 @@ export function errorResponse(
       status,
       headers: {
         'Content-Type': 'application/json',
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        Pragma: 'no-cache',
+        Expires: '0',
       },
     },
   )
