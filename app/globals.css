@@ -69,3 +69,6 @@ button { cursor: pointer; }
 [data-theme="light"] > section:first-of-type > div > div:first-child > p:last-child { color:#746f67 !important; }
 @media (max-width:640px) { .motion-page > header > div { padding-left:16px; padding-right:16px; } .motion-page > header nav { display:none; } .motion-page button { min-height:40px; } .motion-page input { font-size:16px; } }
 @media (prefers-reduced-motion:reduce) { *,*:before, *:after { animation-duration:.01ms!important; transition-duration:.01ms!important; } }
+:where(button, a, input, textarea, select):focus-visible { outline:3px solid #ee642b; outline-offset:3px; }
+button, a { -webkit-tap-highlight-color:transparent; }
+@media (max-width:640px) { button, a[role="button"] { min-height:44px; } }
