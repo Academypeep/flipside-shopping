@@ -86,6 +86,22 @@ async function runTests() {
   const blocked = rateLimiter.check(key, 5, 1000)
   assert(blocked.success === false && blocked.remaining === 0, 'Rate limiter blocks after threshold is reached')
 
+  // 7. Test Sanitization
+  const { sanitizeText } = await import('../lib/sanitize')
+  const dirty = '<script>alert("xss")</script>Hello & goodbye'
+  const clean = sanitizeText(dirty)
+  assert(!clean.includes('<script>') && clean.includes('&lt;script&gt;'), 'Input sanitization escapes HTML tags')
+
+  // 8. Test Idempotency Store
+  const { idempotencyStore } = await import('../lib/idempotency')
+  const idemKey = 'test-idem-key-1'
+  idempotencyStore.setInFlight(idemKey)
+  assert(idempotencyStore.checkInFlight(idemKey) === true, 'Idempotency marks in-flight requests')
+  idempotencyStore.set(idemKey, 201, { 'content-type': 'application/json' }, '{"ok":true}')
+  assert(idempotencyStore.checkInFlight(idemKey) === false, 'Idempotency clears in-flight on completion')
+  const cached = idempotencyStore.get(idemKey)
+  assert(cached !== null && cached.statusCode === 201, 'Idempotency returns cached response')
+
   console.log(`\n========================================`)
   console.log(`Test Results: ${passed} passed, ${failed} failed`)
   console.log(`========================================\n`)

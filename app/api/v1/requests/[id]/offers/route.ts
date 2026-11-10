@@ -1,9 +1,11 @@
-import { NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { errorResponse, successResponse } from '@/lib/api-response'
 import { marketplaceStore } from '@/lib/db/marketplace-store'
 import { CreateOfferInputSchema } from '@/lib/db/types'
+import { idempotencyStore } from '@/lib/idempotency'
 import { logger } from '@/lib/logger'
 import { rateLimiter } from '@/lib/rate-limit'
+import { sanitizeText } from '@/lib/sanitize'
 
 export const dynamic = 'force-dynamic'
 
@@ -58,15 +60,32 @@ export async function POST(
     )
   }
 
+  const idempotencyKey = request.headers.get('x-idempotency-key')
+  if (idempotencyKey) {
+    if (idempotencyStore.checkInFlight(idempotencyKey)) {
+      return errorResponse('CONFLICT', 'An offer with this idempotency key is already in flight', 409, undefined, requestId)
+    }
+    const cached = idempotencyStore.get(idempotencyKey)
+    if (cached) {
+      return new NextResponse(cached.body, {
+        status: cached.statusCode,
+        headers: { ...cached.headers, 'x-idempotency-replayed': 'true', 'x-request-id': requestId },
+      })
+    }
+    idempotencyStore.setInFlight(idempotencyKey)
+  }
+
   let body: unknown
   try {
     body = await request.json()
   } catch {
+    if (idempotencyKey) idempotencyStore.clearInFlight(idempotencyKey)
     return errorResponse('INVALID_JSON', 'Malformed JSON payload in request body', 400, undefined, requestId)
   }
 
   const validation = CreateOfferInputSchema.safeParse(body)
   if (!validation.success) {
+    if (idempotencyKey) idempotencyStore.clearInFlight(idempotencyKey)
     return errorResponse(
       'VALIDATION_ERROR',
       'Invalid offer payload',
@@ -77,10 +96,27 @@ export async function POST(
   }
 
   try {
-    const offer = await marketplaceStore.addOffer(numericId, validation.data)
+    const sanitizedData = {
+      ...validation.data,
+      sellerName: sanitizeText(validation.data.sellerName),
+      notes: validation.data.notes ? sanitizeText(validation.data.notes) : undefined,
+    }
+
+    const offer = await marketplaceStore.addOffer(numericId, sanitizedData)
     logger.info('Marketplace offer posted', { requestId, id: numericId, offerId: offer.id })
-    return successResponse(offer, { requestId }, { status: 201 })
+
+    const response = successResponse(offer, { requestId }, { status: 201 })
+    if (idempotencyKey) {
+      idempotencyStore.set(
+        idempotencyKey,
+        201,
+        { 'Content-Type': 'application/json' },
+        JSON.stringify({ status: 'success', data: offer, meta: { requestId } }),
+      )
+    }
+    return response
   } catch (err: unknown) {
+    if (idempotencyKey) idempotencyStore.clearInFlight(idempotencyKey)
     const error = err as Error
     if (error.message.includes('not found')) {
       return errorResponse('NOT_FOUND', error.message, 404, undefined, requestId)
